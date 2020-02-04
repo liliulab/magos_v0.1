@@ -4,7 +4,11 @@
 
 
 ## Install
-The most updated version of MAGOS can be found in the ACE_workshop folder. In order to get the latest functions, just run the MAGOS_ACE_Dec2019.R. 
+
+```
+library(devtools)
+devtools::install_github('liliulab/MAGOS')
+```
 
 
 ## Input Data
