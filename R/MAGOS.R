@@ -1,4 +1,5 @@
-### JAN 2020. mag.exp.var.v3....comment edep=mean(edep.vec)...
+### April 2020. mag.multiple.run with fold uploaded to GIT
+#mag.exp.var.v3....comment edep=mean(edep.vec)...
 
 ### packages:
 library(igraph)
@@ -120,15 +121,15 @@ mag.exp.var.v2.1<-function(efrq, edep.vec, num, n=1000){
   vafs<- c()
   #depth.range<- max(edep.vec)-min(edep.vec)
   #if(sd(edep.vec)<10){edep.vec<- mean(edep.vec)}
-  print(length(edep.vec))
+  #print(length(edep.vec))
   if(length(edep.vec)>50){
       edep.vec<- edep.vec[edep.vec>=quantile(edep.vec,0.15)&
                             edep.vec<=quantile(edep.vec,0.85)]
   } else {
       edep.vec<-c(mean(edep.vec), mean(edep.vec))
   }
-  print('asjdahskdjhasjkd')
-  print(length(edep.vec))
+  #print('asjdahskdjhasjkd')
+  #print(length(edep.vec))
   for(i in 1:n){
   edep<- sample(edep.vec,1, replace=T)
   s1<-efrq*edep
@@ -454,7 +455,7 @@ mag.reduce.graph<-function(prep.data,x.el=matrix(), n=-100, threshold=0.03){
   results<- list(x.el.red=x.el.final, vaf.data=vaf.data,vaf.sorted=vaf.sorted,
                  depth.data=depth.data,depth.sorted=depth.sorted);
   nn <- nrow(results$x.el.red)
-  print("nn")
+  #print("nn")
   print(nn)
   time1<- as.numeric(Sys.time())
   print('TIME:')
@@ -628,11 +629,11 @@ mag.multiple<- function(prep.data,x.el.cut=data.frame()) {
 
     x1 <- x.elements[1:(nrow(x.elements)-1), ,drop=F]
     x2 <- x.elements[nrow(x.elements), , drop=F]   #the ones that are put together
-    print('here')
-    dim(x.elements)
-    print(dim(x1))
-    print(dim(x2))
-    print('there')
+    #print('here')
+    #dim(x.elements)
+    #print(dim(x1))
+    #print(dim(x2))
+    #print('there')
     #fit.between <- t(apply(x1, 1, fit.elements.weight, element.2=x2,
     #                      arg.data=x.loop, arg.data.other=arg.data.other))
 
@@ -806,7 +807,7 @@ cut.off.multiple  <-function(mag.var){
   temp.mv <- c(); temp.points <- c(); temp.step <- c();temp.point.step <- c();
 
   while(flag == FALSE){
-    print(i); flush.console();
+   # print(i); flush.console();
     ############
     ## I need to use x.el to get the breaks, because using StepI would cause problem
     ## in identical clusters and mutations.
@@ -1647,9 +1648,10 @@ mag.single.run<- function(input.data, fold=F){
 #' The main function of the package. After performing the preprocessing this function performs all steps of clustereing and finding the best structure and grouping of mutations.
 #'
 #' @export
-mag.multiple.run<- function(input.data, reduce=T, threshold=0.03){
+mag.multiple.run<- function(input.data, reduce=T, threshold=0.03, fold= F){
   prep= mag.prepdata(input.data)
   purity=c()
+  
   if(reduce){
     red=mag.reduce.graph(prep, threshold = threshold)
     mag=mag.multiple(prep, x.el.cut = red$x.el.red)
@@ -1662,17 +1664,55 @@ mag.multiple.run<- function(input.data, reduce=T, threshold=0.03){
     mv=mag.var(mag)
     cut=cut.off.multiple(mv)
   }
-
+  
   temp=cut$final.data
-  #plot(temp$vaf.1, temp$vaf.2, col=temp$colors)
+  #plot(temp$vaf.1, temp$vaf.2, col=temp$colors, xlim=c(0,1), ylim=c(0,1))
   sum1=temp%>%group_by(colors)%>%summarise_all(mean)
   purity=apply(sum1, 2, max)*2
   purity=purity[c(-1, -length(purity))]
-
-
+  
+  fs=which(sum1[,-c(1, ncol(sum1))]>0.5, arr.ind = T)
+  #i=1
+  print(purity)
+  if(fold==F & any(purity>1)){purity='There are clusters with frequency higher than 0.5- consider folding.'}
+  
+  if(fold==T & nrow(fs)>0){
+    fold.prep= prep
+    for( i in 1:nrow(fs)){
+      bad_col= as.numeric(sum1[fs[i,1],1 ])
+      bad_sam= fs[i,2]
+      
+      bad_ID=temp$ID[temp$colors==bad_col]
+      head(temp)
+      
+      fold.prep$vafs[fold.prep$vafs$ID%in%bad_ID,bad_sam]=1-fold.prep$vafs[fold.prep$vafs$ID%in%bad_ID,bad_sam] 
+    }
+    
+    #plot(fold.prep$vafs$vaf.1, fold.prep$vafs$vaf.2, xlim=c(0,1), ylim=c(0,1))  
+    
+    
+    if(reduce){
+      red=mag.reduce.graph(fold.prep, threshold = threshold)
+      mag=mag.multiple(fold.prep, x.el.cut = red$x.el.red)
+      mv=mag.var(mag)
+      cut=cut.off.multiple(mv)
+    }
+    if(!reduce){
+      #red=mag.reduce.graph(prep)
+      mag=mag.multiple(fold.prep)#, x.el.cut = red$x.el.red)
+      mv=mag.var(mag)
+      cut=cut.off.multiple(mv)
+    }
+  }
+  temp=cut$final.data
+  #plot(temp$vaf.1, temp$vaf.2, col=temp$colors, xlim=c(0,1), ylim=c(0,1))
+  sum1=temp%>%group_by(colors)%>%summarise_all(mean)
+  purity=apply(sum1, 2, max)*2
+  purity=purity[c(-1, -length(purity))]
+  
   res=list(results=temp, purity=purity, reduce=reduce, mag=mag, cut=cut)
   return(res)
-
+  
 }
 
 
