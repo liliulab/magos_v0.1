@@ -1,6 +1,6 @@
 # MAGOS
-## Model-based Adaptive Grouping of SNPs. 
- MAGOS performs Model Based Hierarchical Clustering on single nucleotide polymorphism from cancer sequencing samples based on the allele frequency. MAGOS can cluster SNPs and deconvolute (sub)clones from read counts from targeted sequencing, whole-exom sequencing or whole-genome sequencing. MAGOS analysis can be performed on data from single sample or multiple samples. 
+## Model-based Adaptive Grouping of SNVs. 
+ MAGOS performs Model Based Hierarchical Clustering on single nucleotide polymorphism from cancer sequencing samples based on the allele frequency. MAGOS can cluster SNVs and deconvolute (sub)clones from read counts from targeted sequencing, whole-exom sequencing or whole-genome sequencing. MAGOS analysis can be performed on data from single sample or multiple samples. 
 
 
 ## Install
@@ -27,7 +27,7 @@ The input data for single sample analysis should be a dataframe or a matrix with
 
 
 ### Multiple Sample
-The input data for multiple sample is similar to sigle sample. The input for multiple sample should include the read counts for all the samples. Each row correspond to a SNP and the columns correspond to reference and alternate reads for that SNP in all the samples. Each sample data should be in a pair of columns, eg. data from the first sample in columns 1 and 2, data from the second sample in columns 3 and 4 and .... 
+The input data for multiple sample is similar to sigle sample. The input for multiple sample should include the read counts for all the samples. Each row correspond to a SNV and the columns correspond to reference and alternate reads for that SNV in all the samples. Each sample data should be in a pair of columns, eg. data from the first sample in columns 1 and 2, data from the second sample in columns 3 and 4 and .... 
 
 | | Ref Sample 1 | Alt Sample 1| Ref Sample 2| Alt Sample 2| Ref Sample 3 | Alt Sample 3|...|...|
 |----|---------|--------|---|---|---|---|---|---|
