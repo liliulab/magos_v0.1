@@ -174,7 +174,7 @@ mag.exp.var.v3<-function(efrq.vec, edep.vec, num, n=1000, type='M'){
   #print(length(edep.vec))
   for(i in 1:n){
     edep<- sample(edep.vec,1, replace=T)
-    edep=mean(edep.vec)
+    #edep=mean(edep.vec)
     #efrq<- sample((efrq.vec),1, replace=T)
     efrq<- mean(efrq.vec)
     s1<-efrq*edep
